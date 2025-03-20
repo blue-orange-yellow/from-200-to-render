@@ -1,0 +1,12 @@
+{
+  "name": "from-200-to-render",
+  "version": "1.0.0",
+  "description": "Web rendering process visualization",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.2"
+  }
+} 

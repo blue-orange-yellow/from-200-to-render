@@ -354,14 +354,61 @@ async fn path_demo(
     HttpResponse::Ok().json(path_info)
 }
 
+#[get("/render-demo")]
+async fn render_demo() -> impl Responder {
+    HttpResponse::Ok()
+        .content_type("text/html; charset=utf-8")
+        .body(
+            r#"
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTMLレンダリングプロセスデモ</title>
+    <link rel="stylesheet" href="/static/css/render-demo.css">
+</head>
+<body>
+    <div class="render-demo">
+        <h1>HTMLレンダリングプロセスの可視化</h1>
+        <div id="event-log" class="event-log">
+            <p><span class="timestamp">[開始]</span>ページの読み込みを開始しました</p>
+        </div>
+        
+        <!-- 画像読み込みのデモ -->
+        <div style="display: none;">
+            <img src="https://picsum.photos/200/300" alt="テスト画像1">
+            <img src="https://picsum.photos/200/301" alt="テスト画像2">
+        </div>
+        
+        <!-- 遅延読み込みスクリプト -->
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => {
+                    const newElement = document.createElement('div');
+                    newElement.textContent = '動的に追加された要素';
+                    document.body.appendChild(newElement);
+                }, 2000);
+            });
+        </script>
+    </div>
+    
+    <script type="module" src="/static/js/dist/render-demo.js"></script>
+</body>
+</html>
+"#,
+        )
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
     println!("Server starting at http://127.0.0.1:8080");
 
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         App::new()
+            .service(fs::Files::new("/static", "static").show_files_listing())
             .service(hello)
             .service(dns_lookup)
             .service(echo_post)
@@ -369,7 +416,7 @@ async fn main() -> std::io::Result<()> {
             .service(echo_delete)
             .service(status_code)
             .service(path_demo)
-            .service(fs::Files::new("/static", "static").show_files_listing())
+            .service(render_demo)
     })
     .bind(("127.0.0.1", 8080))?
     .run()

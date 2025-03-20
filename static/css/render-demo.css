@@ -1,0 +1,44 @@
+/* レンダリングデモ用のスタイル */
+.render-demo {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.render-demo h1 {
+    color: #333;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.render-demo .event-log {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.render-demo .event-log p {
+    margin: 5px 0;
+    font-family: monospace;
+}
+
+.render-demo .event-log .timestamp {
+    color: #666;
+    margin-right: 10px;
+}
+
+/* メディアクエリのデモ */
+@media (max-width: 600px) {
+    .render-demo {
+        padding: 10px;
+    }
+    
+    .render-demo h1 {
+        font-size: 1.5em;
+    }
+} 
