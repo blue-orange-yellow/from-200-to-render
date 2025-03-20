@@ -29,11 +29,14 @@ async fn hello(req: HttpRequest) -> impl Responder {
         .get("User-Agent")
         .map_or("Unknown", |h| h.to_str().unwrap_or("Unknown"));
 
-    HttpResponse::Ok().body(format!(
+    HttpResponse::Ok()
+        .content_type("text/html; charset=utf-8")
+        .body(format!(
         r#"
         <!DOCTYPE html>
         <html>
         <head>
+            <meta charset="UTF-8">
             <title>From 200 to Render</title>
             <link rel="stylesheet" href="/static/style.css">
             <style>

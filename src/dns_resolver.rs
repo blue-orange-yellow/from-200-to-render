@@ -1,7 +1,6 @@
 use serde::Serialize;
 use std::net::IpAddr;
 use trust_dns_resolver::Resolver;
-use trust_dns_resolver::config::*;
 
 #[derive(Serialize)]
 pub struct DnsLookupResult {
@@ -17,7 +16,7 @@ pub async fn lookup_domain(domain: &str) -> Result<DnsLookupResult, Box<dyn std:
     let resolver = Resolver::from_system_conf()?;
 
     // Aレコード（IPv4）とAAAAレコード（IPv6）を取得
-    let response = resolver.lookup_ip(domain).await?;
+    let response = resolver.lookup_ip(domain)?;
     let ip_addresses: Vec<IpAddr> = response.iter().collect();
 
     let elapsed = start.elapsed().as_millis();
