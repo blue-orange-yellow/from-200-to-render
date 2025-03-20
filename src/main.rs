@@ -3,6 +3,7 @@ use actix_web::{
     App, HttpRequest, HttpResponse, HttpServer, Responder, delete, get, post, put, web,
 };
 use serde::{Deserialize, Serialize};
+use serde_json;
 
 mod dns_resolver;
 
@@ -332,6 +333,27 @@ async fn hello(req: HttpRequest) -> impl Responder {
     ))
 }
 
+// パスの動作を確認するための新しいエンドポイント
+#[get("/path-demo/{param1}/{param2}")]
+async fn path_demo(
+    req: HttpRequest,
+    path: web::Path<(String, String)>,
+    query: web::Query<std::collections::HashMap<String, String>>,
+) -> impl Responder {
+    let (param1, param2) = path.into_inner();
+    let path_info = serde_json::json!({
+        "full_path": req.uri().to_string(),
+        "path_params": {
+            "param1": param1,
+            "param2": param2
+        },
+        "query_params": query.into_inner(),
+        "route_pattern": "/path-demo/{param1}/{param2}",
+    });
+
+    HttpResponse::Ok().json(path_info)
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
@@ -346,6 +368,7 @@ async fn main() -> std::io::Result<()> {
             .service(echo_put)
             .service(echo_delete)
             .service(status_code)
+            .service(path_demo)
             .service(fs::Files::new("/static", "static").show_files_listing())
     })
     .bind(("127.0.0.1", 8080))?
