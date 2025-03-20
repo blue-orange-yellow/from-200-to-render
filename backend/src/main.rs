@@ -419,7 +419,6 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
-            .service(fs::Files::new("/static", "../frontend/public").show_files_listing())
             .service(hello)
             .service(dns_lookup)
             .service(echo_post)

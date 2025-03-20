@@ -1,0 +1,78 @@
+.dns-lookup {
+  background-color: #e8f5e9;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.dns-lookup h2 {
+  color: #2e7d32;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.dns-lookup form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.dns-lookup input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: #1a1a1a;
+  color: inherit;
+}
+
+.dns-lookup button {
+  padding: 8px 16px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+.dns-lookup button:hover:not(:disabled) {
+  background-color: #1976d2;
+}
+
+.dns-lookup button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.dns-result {
+  background-color: #1a1a1a;
+  padding: 15px;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.dns-result h3 {
+  color: #4caf50;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.dns-result ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dns-result li {
+  padding: 4px 0;
+  font-family: monospace;
+  color: #fff;
+}
+
+.dns-result .error {
+  color: #ff4444;
+  font-weight: bold;
+} 
