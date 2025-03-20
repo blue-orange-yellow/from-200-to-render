@@ -1,1 +1,0 @@
-/Users/r-sekishita/workspace/from-200-to-render/backend/target/debug/from-200-to-render: /Users/r-sekishita/workspace/from-200-to-render/backend/src/dns_resolver.rs /Users/r-sekishita/workspace/from-200-to-render/backend/src/main.rs
