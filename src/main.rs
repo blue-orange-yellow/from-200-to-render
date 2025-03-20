@@ -1,12 +1,116 @@
 use actix_files as fs;
-use actix_web::{App, HttpRequest, HttpResponse, HttpServer, Responder, get, web};
-use serde::Deserialize;
+use actix_web::{
+    App, HttpRequest, HttpResponse, HttpServer, Responder, delete, get, post, put, web,
+};
+use serde::{Deserialize, Serialize};
 
 mod dns_resolver;
 
 #[derive(Deserialize)]
 struct DnsQuery {
     domain: String,
+}
+
+// HTTPリクエストの詳細を表すモデル
+#[derive(Serialize)]
+struct RequestDetails {
+    method: String,
+    path: String,
+    headers: Vec<(String, String)>,
+    query_string: Option<String>,
+    body: Option<String>,
+}
+
+// POSTリクエストのボディ
+#[derive(Deserialize)]
+struct PostData {
+    message: String,
+}
+
+// 様々なHTTPメソッドを試すためのエンドポイント
+#[post("/echo")]
+async fn echo_post(req: HttpRequest, body: web::Json<PostData>) -> impl Responder {
+    let details = RequestDetails {
+        method: req.method().to_string(),
+        path: req.path().to_string(),
+        headers: req
+            .headers()
+            .iter()
+            .map(|(name, value)| {
+                (
+                    name.to_string(),
+                    value.to_str().unwrap_or("invalid").to_string(),
+                )
+            })
+            .collect(),
+        query_string: Some(req.query_string().to_string()),
+        body: Some(body.message.clone()),
+    };
+
+    HttpResponse::Ok().json(details)
+}
+
+#[put("/echo")]
+async fn echo_put(req: HttpRequest, body: web::Json<PostData>) -> impl Responder {
+    let details = RequestDetails {
+        method: req.method().to_string(),
+        path: req.path().to_string(),
+        headers: req
+            .headers()
+            .iter()
+            .map(|(name, value)| {
+                (
+                    name.to_string(),
+                    value.to_str().unwrap_or("invalid").to_string(),
+                )
+            })
+            .collect(),
+        query_string: Some(req.query_string().to_string()),
+        body: Some(body.message.clone()),
+    };
+
+    HttpResponse::Ok().json(details)
+}
+
+#[delete("/echo")]
+async fn echo_delete(req: HttpRequest) -> impl Responder {
+    let details = RequestDetails {
+        method: req.method().to_string(),
+        path: req.path().to_string(),
+        headers: req
+            .headers()
+            .iter()
+            .map(|(name, value)| {
+                (
+                    name.to_string(),
+                    value.to_str().unwrap_or("invalid").to_string(),
+                )
+            })
+            .collect(),
+        query_string: Some(req.query_string().to_string()),
+        body: None,
+    };
+
+    HttpResponse::Ok().json(details)
+}
+
+#[get("/status/{code}")]
+async fn status_code(path: web::Path<u16>) -> impl Responder {
+    let status_code = path.into_inner();
+    match status_code {
+        200 => HttpResponse::Ok(),
+        201 => HttpResponse::Created(),
+        204 => HttpResponse::NoContent(),
+        400 => HttpResponse::BadRequest(),
+        401 => HttpResponse::Unauthorized(),
+        403 => HttpResponse::Forbidden(),
+        404 => HttpResponse::NotFound(),
+        500 => HttpResponse::InternalServerError(),
+        502 => HttpResponse::BadGateway(),
+        503 => HttpResponse::ServiceUnavailable(),
+        _ => HttpResponse::Ok(),
+    }
+    .body(format!("Returned status code: {}", status_code))
 }
 
 #[get("/dns-lookup")]
@@ -84,6 +188,38 @@ async fn hello(req: HttpRequest) -> impl Responder {
                     margin-top: 15px;
                     white-space: pre-wrap;
                 }}
+                .http-playground {{
+                    margin-top: 20px;
+                    padding: 15px;
+                    background-color: #fff3e0;
+                    border-radius: 5px;
+                }}
+                .http-playground h2 {{
+                    color: #e65100;
+                    margin-top: 0;
+                }}
+                .http-playground select, .http-playground input {{
+                    padding: 8px;
+                    margin-right: 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                }}
+                .http-playground button {{
+                    padding: 8px 16px;
+                    background-color: #ff9800;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }}
+                .http-playground button:hover {{
+                    background-color: #f57c00;
+                }}
+                #http-result {{
+                    margin-top: 15px;
+                    white-space: pre-wrap;
+                    font-family: monospace;
+                }}
             </style>
             <script>
                 async function lookupDomain() {{
@@ -94,6 +230,34 @@ async fn hello(req: HttpRequest) -> impl Responder {
                         const response = await fetch(`/dns-lookup?domain=${{encodeURIComponent(domain)}}`);
                         const data = await response.json();
                         resultDiv.textContent = JSON.stringify(data, null, 2);
+                    }} catch (error) {{
+                        resultDiv.textContent = `エラー: ${{error.message}}`;
+                    }}
+                }}
+
+                async function sendRequest() {{
+                    const method = document.getElementById('http-method').value;
+                    const statusCode = document.getElementById('status-code').value;
+                    const message = document.getElementById('message-input').value;
+                    const resultDiv = document.getElementById('http-result');
+                    
+                    try {{
+                        let url = method === 'STATUS' ? `/status/${{statusCode}}` : '/echo';
+                        let options = {{
+                            method: method === 'STATUS' ? 'GET' : method,
+                            headers: {{
+                                'Content-Type': 'application/json'
+                            }}
+                        }};
+                        
+                        if (['POST', 'PUT'].includes(method)) {{
+                            options.body = JSON.stringify({{ message }});
+                        }}
+                        
+                        const response = await fetch(url, options);
+                        const data = await response.text();
+                        
+                        resultDiv.textContent = `Status: ${{response.status}} ${{response.statusText}}\n\nResponse:\n${{data}}`;
                     }} catch (error) {{
                         resultDiv.textContent = `エラー: ${{error.message}}`;
                     }}
@@ -132,6 +296,24 @@ async fn hello(req: HttpRequest) -> impl Responder {
                 <pre id="dns-result"></pre>
             </div>
 
+            <div class="http-playground">
+                <h2>HTTP Playground</h2>
+                <p>HTTPメソッドとステータスコードを試してみよう：</p>
+                <div>
+                    <select id="http-method">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                        <option value="STATUS">Status Code</option>
+                    </select>
+                    <input type="number" id="status-code" placeholder="Status Code (200, 404, etc.)" value="200">
+                    <input type="text" id="message-input" placeholder="Message for POST/PUT">
+                    <button onclick="sendRequest()">Send Request</button>
+                </div>
+                <pre id="http-result"></pre>
+            </div>
+
             <p>This page will help us understand:</p>
             <ul>
                 <li>HTTP Request/Response cycle</li>
@@ -160,6 +342,10 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .service(hello)
             .service(dns_lookup)
+            .service(echo_post)
+            .service(echo_put)
+            .service(echo_delete)
+            .service(status_code)
             .service(fs::Files::new("/static", "static").show_files_listing())
     })
     .bind(("127.0.0.1", 8080))?
