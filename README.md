@@ -27,70 +27,31 @@
    - CSS の適用タイミング
    - JavaScript の実行順序
 
-## 技術スタック
-
-### バックエンド
-
-- Rust
-- Actix-web（Web フレームワーク）
-- trust-dns-resolver（DNS 解決）
-
-### フロントエンド
-
-- TypeScript
-- 標準 DOM API
-- CSS
-
 ## プロジェクト構造
 
 ```
 .
-├── backend/                 # Rustバックエンド
-│   ├── Cargo.toml          # Rustの依存関係
+├── backend/                 # バックエンド
+│   ├── Cargo.toml
 │   └── src/
 │       ├── main.rs         # メインサーバーコード
 │       └── dns_resolver.rs # DNS解決機能
-└── frontend/               # TypeScriptフロントエンド
-    ├── package.json        # Node.jsの依存関係
-    ├── tsconfig.json       # TypeScript設定
+└── frontend/               # フロントエンド
     ├── src/
     │   └── ts/
-    │       └── render-demo.ts # TypeScriptソース
-    └── public/             # 静的ファイル
-        ├── css/
-        │   └── render-demo.css
-        └── js/            # コンパイルされたJavaScript
+    │       └── render-demo.ts
+    └── public/
+        └── css/
+            └── render-demo.css
 ```
 
-## セットアップ
+## セットアップと実行
 
-### 必要な環境
-
-- Rust（1.75 以上）
-- Node.js（20.0 以上）
-- npm（10.0 以上）
-
-### バックエンドのセットアップ
-
-```bash
-cd backend
-cargo build
-```
-
-### フロントエンドのセットアップ
+1. フロントエンドのビルド
 
 ```bash
 cd frontend
 npm install
-npm run build
-```
-
-## 実行方法
-
-1. フロントエンドのビルド（変更時）
-
-```bash
-cd frontend
 npm run build
 ```
 
