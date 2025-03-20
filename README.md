@@ -91,7 +91,3 @@ http://localhost:8080
 - HTML レンダリングプロセスの可視化
 - DOM イベントの監視
 - リソース読み込みの追跡
-
-## ライセンス
-
-MIT License
