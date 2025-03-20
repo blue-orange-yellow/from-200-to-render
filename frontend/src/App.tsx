@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { DnsLookup } from './components/DnsLookup';
-import './App.css';
+import { DnsLookup } from './components/dns/DnsLookup';
+import { HttpPlayground } from './components/http/HttpPlayground';
+import './styles/App.css';
 
 interface HttpResponse {
   status: number;
@@ -60,7 +61,7 @@ function App() {
   };
 
   return (
-    <div className="container">
+    <div className="app">
       <div className="tabs">
         <button
           className={activeTab === 'http-playground' ? 'active' : ''}
@@ -76,89 +77,10 @@ function App() {
         </button>
       </div>
 
-      {activeTab === 'http-playground' && (
-        <>
-          <h1>HTTP Playground</h1>
-          <form onSubmit={handleSubmit} className="request-form">
-            <div className="form-group">
-              <label htmlFor="method">Method:</label>
-              <select
-                id="method"
-                value={method}
-                onChange={(e) => setMethod(e.target.value)}
-              >
-                {['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'].map((m) => (
-                  <option key={m} value={m}>{m}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="url">URL:</label>
-              <input
-                type="text"
-                id="url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="Enter URL"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="headers">Headers:</label>
-              <textarea
-                id="headers"
-                value={headers}
-                onChange={(e) => setHeaders(e.target.value)}
-                placeholder="Enter headers (one per line)&#10;Example:&#10;Content-Type: application/json&#10;Authorization: Bearer token"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="body">Body:</label>
-              <textarea
-                id="body"
-                value={body}
-                onChange={(e) => setBody(e.target.value)}
-                placeholder="Enter request body"
-              />
-            </div>
-
-            <button type="submit">Send Request</button>
-          </form>
-
-          {error && (
-            <div className="response-section error">
-              <h2>Error</h2>
-              <pre>{error}</pre>
-            </div>
-          )}
-
-          {response && (
-            <div className="response-section">
-              <h2>Response</h2>
-              <div className="response-status">
-                Status: {response.status} {response.statusText}
-              </div>
-              <div className="response-headers">
-                <h3>Headers:</h3>
-                <pre>
-                  {Object.entries(response.headers)
-                    .map(([key, value]) => `${key}: ${value}`)
-                    .join('\n')}
-                </pre>
-              </div>
-              <div className="response-body">
-                <h3>Body:</h3>
-                <pre>{response.body}</pre>
-              </div>
-            </div>
-          )}
-        </>
-      )}
-
-      {activeTab === 'dns-lookup' && <DnsLookup />}
+      <div className="content">
+        {activeTab === 'http-playground' && <HttpPlayground />}
+        {activeTab === 'dns-lookup' && <DnsLookup />}
+      </div>
     </div>
   );
 }

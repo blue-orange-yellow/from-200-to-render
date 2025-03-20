@@ -1,9 +1,14 @@
+mod handlers;
+mod models;
+mod utils;
+
 use actix_files as fs;
 use actix_web::{
     App, HttpRequest, HttpResponse, HttpServer, Responder, delete, get, post, put, web,
 };
 use serde::{Deserialize, Serialize};
 use serde_json;
+use handlers::{dns, http};
 
 mod dns_resolver;
 
@@ -419,14 +424,11 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
-            .service(hello)
-            .service(dns_lookup)
-            .service(echo_post)
-            .service(echo_put)
-            .service(echo_delete)
-            .service(status_code)
-            .service(path_demo)
-            .service(render_demo)
+            .service(http::echo_post)
+            .service(http::echo_put)
+            .service(http::echo_delete)
+            .service(http::status_code)
+            .service(dns::dns_lookup)
     })
     .bind(("127.0.0.1", 8080))?
     .run()

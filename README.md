@@ -1,93 +1,88 @@
-# From 200 to Render
+# HTTP Playground with DNS Lookup
 
-このプロジェクトは、Web ページが表示されるまでの過程を実践的に学ぶためのハンズオン教材です。
+HTTP リクエストのテストと DNS ルックアップ機能を提供する Web アプリケーション。
 
-## 学習内容
+## 機能
 
-1. **URL の構造とパース**
+- HTTP リクエストのテスト（GET, POST, PUT, DELETE）
+- カスタムヘッダーとリクエストボディの設定
+- レスポンス詳細の表示（ステータス、ヘッダー、ボディ）
+- DNS ルックアップ（ドメイン名から IP アドレスの解決）
 
-   - プロトコル、ホスト、パスの理解
-   - クエリパラメータの処理
-   - パスパラメータの活用
+## 必要要件
 
-2. **DNS 名前解決**
+### フロントエンド
 
-   - ドメイン名から IP アドレスへの解決
-   - 解決時間の計測
-   - Round Robin DNS の理解
+- Node.js (v18 以上)
+- npm (v9 以上)
 
-3. **HTTP リクエスト/レスポンス**
+### バックエンド
 
-   - 各種 HTTP メソッド（GET, POST, PUT, DELETE）
-   - ステータスコード
-   - ヘッダー情報
+- Rust (1.70 以上)
+- Cargo
 
-4. **HTML レンダリングプロセス**
-   - DOM の構築過程
-   - CSS の適用タイミング
-   - JavaScript の実行順序
+## セットアップ
 
-## プロジェクト構造
-
-```
-.
-├── backend/                 # バックエンド
-│   ├── Cargo.toml
-│   └── src/
-│       ├── main.rs         # メインサーバーコード
-│       └── dns_resolver.rs # DNS解決機能
-└── frontend/               # フロントエンド
-    ├── src/
-    │   └── ts/
-    │       └── render-demo.ts
-    └── public/
-        └── css/
-            └── render-demo.css
-```
-
-## セットアップと実行
-
-1. フロントエンドのビルド
+1. リポジトリのクローン:
 
 ```bash
-cd frontend
-npm install
-npm run build
+git clone [repository-url]
+cd from-200-to-render
 ```
 
-2. サーバーの起動
+2. バックエンドの起動:
 
 ```bash
 cd backend
 cargo run
+# サーバーが http://localhost:8080 で起動します
 ```
 
-3. ブラウザでアクセス
+3. フロントエンドの起動:
+
+```bash
+cd frontend
+npm install
+npm run dev
+# アプリケーションが http://localhost:3001 で起動します
+```
+
+## プロジェクト構成
 
 ```
-http://localhost:8080
+.
+├── frontend/
+│   ├── src/
+│   │   ├── components/  # UIコンポーネント
+│   │   ├── styles/      # CSSスタイル
+│   │   ├── types/       # 型定義
+│   │   └── api/         # APIクライアント
+│   └── ...
+└── backend/
+    ├── src/
+    │   ├── handlers/    # APIハンドラー
+    │   ├── models/      # データモデル
+    │   └── utils/       # ユーティリティ関数
+    └── ...
 ```
 
-## 機能説明
+## API エンドポイント
 
-### メインページ (`/`)
+### HTTP リクエストテスト
 
-- リクエストの詳細表示
-- DNS Lookup Tool
-- HTTP Playground
+- `GET /echo` - GET リクエストのテスト
+- `POST /echo` - POST リクエストのテスト
+- `PUT /echo` - PUT リクエストのテスト
+- `DELETE /echo` - DELETE リクエストのテスト
 
-### DNS Lookup (`/dns-lookup`)
+### DNS ルックアップ
 
-- ドメイン名の名前解決
-- 解決時間の計測
+- `POST /dns-lookup` - ドメイン名の DNS 解決
+  - リクエストボディ: `{ "domain": "example.com" }`
+  - レスポンス: `{ "ips": ["93.184.216.34"] }`
 
-### HTTP メソッドテスト (`/echo`)
+## 開発
 
-- 各種 HTTP メソッドの動作確認
-- リクエスト/レスポンスの詳細表示
-
-### レンダリングデモ (`/render-demo`)
-
-- HTML レンダリングプロセスの可視化
-- DOM イベントの監視
-- リソース読み込みの追跡
+- フロントエンドの開発サーバーはホットリロードに対応しています
+- バックエンドの変更は再起動が必要です
+- `npm run build`でフロントエンドのプロダクションビルドを生成できます

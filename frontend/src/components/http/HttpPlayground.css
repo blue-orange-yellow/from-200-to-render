@@ -1,0 +1,46 @@
+.http-playground {
+  background: #fff3e0;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.http-playground h2 {
+  color: #ff9800;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.http-playground .form-group select {
+  max-width: 200px;
+}
+
+.http-playground .form-group input {
+  max-width: 400px;
+}
+
+.http-playground button {
+  background: #ff9800;
+}
+
+.http-playground button:hover {
+  background: #f57c00;
+}
+
+.http-playground .response {
+  background: white;
+}
+
+.http-playground .response h3 {
+  color: #ff9800;
+}
+
+.http-playground .status {
+  font-weight: bold;
+  color: #ff9800;
+  margin-bottom: 15px;
+}
+
+.http-playground pre {
+  background: #fff8e1;
+} 
