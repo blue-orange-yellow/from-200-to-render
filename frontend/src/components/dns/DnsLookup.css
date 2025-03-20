@@ -1,67 +1,69 @@
 .dns-lookup {
-  background: #f8f9fa;
+  background: #252525;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #333;
 }
 
 .dns-lookup h2 {
-  color: #2196f3;
+  color: #64b5f6;
   margin-top: 0;
   margin-bottom: 20px;
+  font-size: 20px;
 }
 
-.dns-lookup form {
+.dns-lookup .form-group {
+  max-width: 500px;
+}
+
+.dns-lookup .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #e1e1e1;
+}
+
+.dns-lookup .form-group .input-wrapper {
   display: flex;
-  gap: 10px;
-  margin-bottom: 1rem;
-}
-
-.dns-lookup input {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-  background-color: #1a1a1a;
-  color: inherit;
-}
-
-.dns-lookup button {
-  padding: 8px 16px;
-  background-color: #2196f3;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.2s;
-}
-
-.dns-lookup button:hover:not(:disabled) {
-  background-color: #1976d2;
-}
-
-.dns-lookup button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+  gap: 8px;
 }
 
 .dns-lookup .form-group input {
-  max-width: 400px;
+  flex: 1;
+  background-color: #1a1a1a;
+  color: #e1e1e1;
+  padding: 8px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.dns-lookup .form-group button {
+  padding: 8px 12px;
+  font-size: 14px;
+  min-width: 80px;
+  background-color: #1565c0;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dns-lookup .form-group button:hover {
+  background-color: #1976d2;
 }
 
 .dns-result {
   margin-top: 20px;
   padding: 15px;
-  background: white;
+  background: #1a1a1a;
   border-radius: 4px;
-  border: 1px solid #e9ecef;
+  border: 1px solid #333;
 }
 
 .dns-result h3 {
-  color: #2196f3;
+  color: #64b5f6;
   margin-top: 0;
+  font-size: 16px;
 }
 
 .dns-result ul {
@@ -71,11 +73,14 @@
 }
 
 .dns-result li {
-  padding: 8px;
-  background: #f8f9fa;
+  padding: 8px 12px;
+  background: #252525;
   border-radius: 4px;
   margin-bottom: 8px;
-  font-family: monospace;
+  font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  color: #e1e1e1;
+  border: 1px solid #333;
 }
 
 .dns-result li:last-child {
@@ -85,12 +90,14 @@
 .dns-error {
   margin-top: 20px;
   padding: 15px;
-  background: #f8d7da;
+  background: rgba(239, 83, 80, 0.1);
   border-radius: 4px;
-  color: #dc3545;
+  color: #ef5350;
+  border: 1px solid rgba(239, 83, 80, 0.2);
 }
 
 .dns-error h3 {
-  color: #dc3545;
+  color: #ef5350;
   margin-top: 0;
+  font-size: 16px;
 } 

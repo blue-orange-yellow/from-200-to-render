@@ -26,18 +26,19 @@ export const DnsLookup = () => {
       <h2>DNS Lookup</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>
-            Domain Name:
+          <label htmlFor="domain">Domain Name:</label>
+          <div className="input-wrapper">
             <input
+              id="domain"
               type="text"
               value={domain}
               onChange={(e) => setDomain(e.target.value)}
               placeholder="example.com"
               required
             />
-          </label>
+            <button type="submit">Lookup</button>
+          </div>
         </div>
-        <button type="submit">Lookup</button>
       </form>
 
       {error && (
