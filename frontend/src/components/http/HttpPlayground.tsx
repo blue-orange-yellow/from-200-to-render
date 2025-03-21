@@ -1,59 +1,80 @@
 import React, { useState } from 'react';
+import { RequestDetails, TimingInfo } from './RequestDetails';
+import { measureRequestTiming } from '../../utils/timing';
 import './HttpPlayground.css';
 import '../../styles/App.css';
 
 interface HttpResponse {
-  status: number;
+  method: string;
+  path: string;
   headers: Record<string, string>;
-  body: string;
+  query_string?: string;
+  body?: string;
 }
 
-export const HttpPlayground: React.FC = () => {
-  const [method, setMethod] = useState<string>('GET');
-  const [url, setUrl] = useState<string>('');
-  const [headers, setHeaders] = useState<string>('');
-  const [body, setBody] = useState<string>('');
+export const HttpPlayground = () => {
+  const [method, setMethod] = useState('GET');
+  const [url, setUrl] = useState('http://localhost:8080/echo');
+  const [headers, setHeaders] = useState<Record<string, string>>({});
+  const [body, setBody] = useState('');
   const [response, setResponse] = useState<HttpResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [timing, setTiming] = useState<TimingInfo | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setResponse(null);
+    setTiming(null);
 
     try {
-      const headersObj = headers
-        .split('\n')
-        .filter(line => line.trim())
-        .reduce((acc, line) => {
-          const [key, value] = line.split(':').map(str => str.trim());
-          if (key && value) {
-            acc[key] = value;
-          }
-          return acc;
-        }, {} as Record<string, string>);
-
-      const response = await fetch(url, {
+      const options: RequestInit = {
         method,
-        headers: headersObj,
-        body: method !== 'GET' ? body : undefined,
-      });
+        headers: {
+          'Content-Type': 'application/json',
+          ...headers,
+        },
+      };
 
-      const responseHeaders = {} as Record<string, string>;
-      response.headers.forEach((value, key) => {
-        responseHeaders[key] = value;
-      });
+      if (['POST', 'PUT'].includes(method) && body) {
+        options.body = JSON.stringify({ message: body });
+      }
 
-      setResponse({
-        status: response.status,
-        headers: responseHeaders,
-        body: await response.text(),
-      });
-    } catch (error) {
-      console.error('Error:', error);
-      setResponse({
-        status: 0,
-        headers: {},
-        body: error instanceof Error ? error.message : 'Unknown error occurred',
-      });
+      const timingInfo = await measureRequestTiming(url);
+      const response = await fetch(url, options);
+      const data = await response.json();
+
+      setResponse(data);
+      setTiming(timingInfo);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     }
+  };
+
+  const addHeader = () => {
+    setHeaders(prev => ({
+      ...prev,
+      '': '',
+    }));
+  };
+
+  const updateHeader = (oldKey: string, newKey: string, value: string) => {
+    setHeaders(prev => {
+      const newHeaders = { ...prev };
+      if (oldKey !== newKey) {
+        delete newHeaders[oldKey];
+      }
+      newHeaders[newKey] = value;
+      return newHeaders;
+    });
+  };
+
+  const removeHeader = (key: string) => {
+    setHeaders(prev => {
+      const newHeaders = { ...prev };
+      delete newHeaders[key];
+      return newHeaders;
+    });
   };
 
   return (
@@ -61,65 +82,86 @@ export const HttpPlayground: React.FC = () => {
       <h2>HTTP Playground</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>
-            Method:
-            <select value={method} onChange={(e) => setMethod(e.target.value)}>
-              <option value="GET">GET</option>
-              <option value="POST">POST</option>
-              <option value="PUT">PUT</option>
-              <option value="DELETE">DELETE</option>
-            </select>
-          </label>
+          <label>Method:</label>
+          <select value={method} onChange={e => setMethod(e.target.value)}>
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="DELETE">DELETE</option>
+          </select>
         </div>
+
         <div className="form-group">
-          <label>
-            URL:
-            <input
-              type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="Enter URL"
-              required
-            />
-          </label>
+          <label>URL:</label>
+          <input
+            type="text"
+            value={url}
+            onChange={e => setUrl(e.target.value)}
+            placeholder="http://localhost:8080/echo"
+          />
         </div>
+
         <div className="form-group">
-          <label>
-            Headers (one per line, format: "Key: Value"):
-            <textarea
-              value={headers}
-              onChange={(e) => setHeaders(e.target.value)}
-              placeholder="Content-Type: application/json"
-            />
-          </label>
+          <label>Headers:</label>
+          <div className="headers-list">
+            {Object.entries(headers).map(([key, value]) => (
+              <div key={key} className="header-item">
+                <input
+                  type="text"
+                  value={key}
+                  onChange={e => updateHeader(key, e.target.value, value)}
+                  placeholder="Header name"
+                />
+                <input
+                  type="text"
+                  value={value}
+                  onChange={e => updateHeader(key, key, e.target.value)}
+                  placeholder="Header value"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeHeader(key)}
+                  className="remove-header"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            <button type="button" onClick={addHeader} className="add-header">
+              + Add Header
+            </button>
+          </div>
         </div>
-        <div className="form-group">
-          <label>
-            Body:
+
+        {['POST', 'PUT'].includes(method) && (
+          <div className="form-group">
+            <label>Request Body:</label>
             <textarea
               value={body}
-              onChange={(e) => setBody(e.target.value)}
-              placeholder="Request body (for POST/PUT)"
-              disabled={method === 'GET'}
+              onChange={e => setBody(e.target.value)}
+              placeholder="Enter request body"
             />
-          </label>
-        </div>
-        <button type="submit">Send Request</button>
+          </div>
+        )}
+
+        <button type="submit" className="send-request">
+          Send Request
+        </button>
       </form>
 
-      {response && (
-        <div className="response">
-          <h3>Response</h3>
-          <div className="status">Status: {response.status}</div>
-          <div className="headers">
-            <h4>Headers:</h4>
-            <pre>{JSON.stringify(response.headers, null, 2)}</pre>
-          </div>
-          <div className="body">
-            <h4>Body:</h4>
-            <pre>{response.body}</pre>
-          </div>
-        </div>
+      {error && <div className="error">{error}</div>}
+
+      {response && timing && (
+        <RequestDetails
+          url={url}
+          method={method}
+          headers={headers}
+          requestBody={body}
+          responseStatus={200}
+          responseHeaders={response.headers}
+          responseBody={JSON.stringify(response, null, 2)}
+          timing={timing}
+        />
       )}
     </div>
   );

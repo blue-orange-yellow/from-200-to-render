@@ -1,5 +1,14 @@
-use actix_web::{delete, get, post, put, web, HttpRequest, HttpResponse, Responder};
 use crate::models::http::{PostData, RequestDetails};
+use actix_web::{HttpRequest, HttpResponse, Responder, delete, get, post, put, web};
+use std::time::Duration;
+use tokio::time::sleep;
+
+#[get("/echo")]
+pub async fn echo_get(req: HttpRequest) -> impl Responder {
+    sleep(Duration::from_millis(500)).await;
+    let details = create_request_details(&req, None);
+    HttpResponse::Ok().json(details)
+}
 
 #[post("/echo")]
 pub async fn echo_post(req: HttpRequest, body: web::Json<PostData>) -> impl Responder {
@@ -55,4 +64,4 @@ fn create_request_details(req: &HttpRequest, body: Option<String>) -> RequestDet
         query_string: Some(req.query_string().to_string()),
         body,
     }
-} 
+}
